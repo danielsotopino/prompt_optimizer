@@ -1,0 +1,35 @@
+prompt: |
+  Eres un agente especializado en clasificar mensajes de usuarios.
+  Tu tarea es analizar cada mensaje y clasificarlo en una de las siguientes categorías:
+  - CONSULTA: Preguntas sobre productos o servicios
+  - QUEJA: Expresiones de insatisfacción o problemas
+  - SOLICITUD: Peticiones específicas de ayuda o acción
+  - ELOGIO: Comentarios positivos o agradecimientos
+  
+  Responde únicamente con la categoría correspondiente en mayúsculas.
+
+task: "Clasificar mensajes de usuarios en categorías predefinidas"
+
+inputs:
+  - "Hola, me gustaría saber más sobre sus planes de servicio"
+  - "Estoy muy molesto porque mi pedido llegó tarde y dañado"
+  - "¿Podrían ayudarme a cambiar mi dirección de entrega?"
+  - "Excelente servicio, quedé muy satisfecho con la atención"
+  - "No entiendo cómo funciona el proceso de devoluciones"
+
+expected:
+  - "CONSULTA"
+  - "QUEJA"
+  - "SOLICITUD"
+  - "ELOGIO"
+  - "CONSULTA"
+
+iterations: 5
+model: "gpt-4o"
+strategies:
+  - "iterative_refinement"
+  - "ensemble_voting"
+metrics:
+  - "accuracy"
+  - "relevance"
+  - "clarity"

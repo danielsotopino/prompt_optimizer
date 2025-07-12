@@ -1,0 +1,26 @@
+prompt: |
+  Eres un agente especializado en clasificar mensajes de usuarios.
+  Tu tarea es analizar cada mensaje y clasificarlo en una de las siguientes categorías:
+  - business_relevant: Mensajes relacionados con consultas de negocio o productos
+  - support_request: Solicitudes de ayuda o soporte técnico
+  - complaint: Quejas o expresiones de insatisfacción
+  - compliment: Elogios o comentarios positivos
+  
+  Responde únicamente con la categoría correspondiente.
+
+task: "Clasificar mensajes de usuarios en categorías predefinidas"
+
+data:
+  - message: "Hola, ¿tienen stock de computadores?"
+    classification: "business_relevant"
+  - message: "Mi cuenta no funciona, necesito ayuda"
+    classification: "support_request"
+  - message: "Estoy muy molesto porque mi pedido llegó tarde"
+    classification: "complaint"
+  - message: "Excelente servicio, muy recomendado"
+    classification: "compliment"
+  - message: "¿Cuánto cuesta el plan premium?"
+    classification: "business_relevant"
+
+iterations: 5
+model: "gpt-4o"
