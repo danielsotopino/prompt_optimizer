@@ -73,3 +73,6 @@ temp/
 dmypy.json
 
 optimizations/
+
+.cursor/
+.claude/

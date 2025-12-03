@@ -285,7 +285,6 @@ Return only a number between 0.0 and 1.0 representing the score."""
             )
             
             score_text = response.choices[0].message.content.strip()
-            print(f"Score text: {score_text}")
             score = float(score_text)
             return max(0.0, min(1.0, score))  # Clamp between 0 and 1
             
