@@ -31,6 +31,9 @@ def setup_cli():
     optimize_parser.add_argument('--expected', help='JSON or YAML file with expected outputs')
     optimize_parser.add_argument('--iterations', type=int, default=5, help='Number of optimization iterations')
     optimize_parser.add_argument('--output', help='Output file for results')
+    optimize_parser.add_argument('--optimization-model', help='Model for optimization (overrides OPTIMIZATION_MODEL env var)')
+    optimize_parser.add_argument('--execution-model', help='Model for execution (overrides EXECUTION_MODEL env var)')
+    optimize_parser.add_argument('--evaluation-model', help='Model for evaluation (overrides EVALUATION_MODEL env var)')
     
     # Pipeline comparison command
     compare_parser = subparsers.add_parser('compare', help='Compare optimization strategies')
@@ -103,18 +106,18 @@ async def run_basic_optimization(args):
         except:
             pass
     
-    # Configure optimization
+    # Configure optimization (models read from env vars by default)
     config = PromptOptimizationConfig(
         max_iterations=args.iterations,
-        optimization_model="gpt-4o",
-        execution_model="gpt-4o-mini",
-        evaluation_model="gpt-4o"
+        optimization_model=args.optimization_model,
+        execution_model=args.execution_model,
+        evaluation_model=args.evaluation_model
     )
     
-    # Get API key
-    api_key = os.getenv("OPENAI_API_KEY")
+    # Get OpenRouter API key
+    api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
-        print("❌ Error: OPENAI_API_KEY environment variable not set")
+        print("❌ Error: OPENROUTER_API_KEY environment variable not set")
         return
     
     # Run optimization
@@ -147,10 +150,10 @@ async def run_strategy_comparison(args):
     if args.expected:
         expected_outputs = YAMLParser.load_expected_flexible(args.expected)
     
-    # Get API key
-    api_key = os.getenv("OPENAI_API_KEY")
+    # Get OpenRouter API key
+    api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
-        print("❌ Error: OPENAI_API_KEY environment variable not set")
+        print("❌ Error: OPENROUTER_API_KEY environment variable not set")
         return
     
     # Convert strategy names to enum values
@@ -186,10 +189,10 @@ async def run_job_title_example(args):
     """Run job title classification example"""
     print("🎯 Running job title classification example...")
     
-    # Get API key
-    api_key = os.getenv("OPENAI_API_KEY")
+    # Get OpenRouter API key
+    api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
-        print("❌ Error: OPENAI_API_KEY environment variable not set")
+        print("❌ Error: OPENROUTER_API_KEY environment variable not set")
         return
     
     example = JobTitleClassificationExample(api_key)
@@ -221,10 +224,10 @@ async def run_evaluation(args):
     if args.expected:
         expected_outputs = YAMLParser.load_expected_flexible(args.expected)
     
-    # Get API key
-    api_key = os.getenv("OPENAI_API_KEY")
+    # Get OpenRouter API key
+    api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
-        print("❌ Error: OPENAI_API_KEY environment variable not set")
+        print("❌ Error: OPENROUTER_API_KEY environment variable not set")
         return
     
     # Setup evaluation

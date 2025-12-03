@@ -265,7 +265,7 @@ class AdvancedOptimizationPipeline:
         framework = SPOFramework(self.spo_config, self.api_key)
         
         try:
-            response = framework.client.chat.completions.create(
+            response = framework.client.chat_completions_create(
                 model=self.spo_config.optimization_model,
                 messages=[
                     {"role": "user", "content": variation_prompts[0]}
@@ -318,7 +318,7 @@ Create a new prompt that combines the best aspects of both. Return only the new 
 
             try:
                 framework = SPOFramework(self.spo_config, self.api_key)
-                response = framework.client.chat.completions.create(
+                response = framework.client.chat_completions_create(
                     model=self.spo_config.optimization_model,
                     messages=[
                         {"role": "user", "content": crossover_prompt}

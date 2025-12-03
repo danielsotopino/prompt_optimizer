@@ -3,9 +3,9 @@ Confidence Scoring System
 Based on MetaGPT notebook approach for measuring optimization confidence
 """
 import numpy as np
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from dataclasses import dataclass
-from openai import OpenAI
+from llm_client import LLMClient
 
 @dataclass
 class ConfidenceMetrics:
@@ -19,7 +19,7 @@ class ConfidenceMetrics:
 class ConfidenceAnalyzer:
     """Analyzer for measuring confidence in optimization results"""
     
-    def __init__(self, client: OpenAI, evaluation_model: str = "gpt-4o"):
+    def __init__(self, client: LLMClient, evaluation_model: str = "gpt-4o"):
         self.client = client
         self.evaluation_model = evaluation_model
     
@@ -81,7 +81,7 @@ class ConfidenceAnalyzer:
             for test_input in test_inputs:
                 try:
                     # Execute prompt
-                    response = self.client.chat.completions.create(
+                    response = self.client.chat_completions_create(
                         model=self.evaluation_model,
                         messages=[{"role": "user", "content": f"{prompt}\n\nInput: {test_input}"}],
                         temperature=0.1,  # Low temperature for consistency

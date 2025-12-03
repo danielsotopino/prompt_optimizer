@@ -12,6 +12,7 @@ from openai import OpenAI
 import time
 import numpy as np
 from abc import ABC, abstractmethod
+from llm_client import LLMClient
 
 class EvaluationMetric(Enum):
     """Available evaluation metrics"""
@@ -55,7 +56,7 @@ class ComprehensiveEvaluation:
 class BaseEvaluator(ABC):
     """Base class for all evaluators"""
     
-    def __init__(self, client: OpenAI, model: str = "gpt-4o"):
+    def __init__(self, client: LLMClient, model: str = "gpt-4o"):
         self.client = client
         self.model = model
     
@@ -112,7 +113,7 @@ Confidence: [0.0-1.0]
 Explanation: [detailed explanation]"""
         
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.model,
                 messages=[{"role": "user", "content": evaluation_prompt}],
                 temperature=0.1,
@@ -181,7 +182,7 @@ Confidence: [0.0-1.0]
 Explanation: [detailed explanation]"""
         
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.model,
                 messages=[{"role": "user", "content": evaluation_prompt}],
                 temperature=0.1,
@@ -233,7 +234,7 @@ Confidence: [0.0-1.0]
 Explanation: [detailed explanation]"""
         
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.model,
                 messages=[{"role": "user", "content": evaluation_prompt}],
                 temperature=0.1,
@@ -289,7 +290,7 @@ Confidence: [0.0-1.0]
 Explanation: [detailed explanation]"""
         
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.model,
                 messages=[{"role": "user", "content": evaluation_prompt}],
                 temperature=0.1,
@@ -319,8 +320,15 @@ Explanation: [detailed explanation]"""
 class ComprehensiveEvaluationSystem:
     """System for comprehensive evaluation using multiple metrics"""
     
-    def __init__(self, api_key: str, model: str = "gpt-4o"):
-        self.client = OpenAI(api_key=api_key)
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+        from llm_client import create_llm_client
+        import os
+        
+        # Get model from parameter or environment
+        if model is None:
+            model = os.getenv("EVALUATION_MODEL", "openai/gpt-4o")
+        
+        self.client = create_llm_client(api_key=api_key)
         self.model = model
         self.evaluators = {}
         self._initialize_evaluators()

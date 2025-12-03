@@ -179,8 +179,8 @@ Classification:"""
         )
         
         # Create MetaGPT style optimizer
-        from openai import OpenAI
-        client = OpenAI(api_key=self.api_key)
+        from llm_client import create_llm_client
+        client = create_llm_client(api_key=self.api_key)
         optimizer = MetaGPTStyleOptimizer(client, config)
         
         # Create initial lambda function

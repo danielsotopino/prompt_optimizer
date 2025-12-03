@@ -2,24 +2,33 @@
 Self-Supervised Prompt Optimization (SPO) Framework
 Based on MetaGPT implementation for automated prompt engineering
 """
-import asyncio
 import json
 import logging
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass, asdict
-from openai import OpenAI
 import time
+from llm_client import create_llm_client
+import os
 
 @dataclass
 class PromptOptimizationConfig:
     """Configuration for prompt optimization"""
     max_iterations: int = 5
-    optimization_model: str = "gpt-4o"
-    execution_model: str = "gpt-4o-mini"
-    evaluation_model: str = "gpt-4o"
+    optimization_model: Optional[str] = None  # Read from OPTIMIZATION_MODEL env var
+    execution_model: Optional[str] = None  # Read from EXECUTION_MODEL env var
+    evaluation_model: Optional[str] = None  # Read from EVALUATION_MODEL env var
     temperature: float = 0.7
-    max_tokens: int = 2000
+    max_tokens: int = 0
     timeout: int = 30
+    
+    def __post_init__(self):
+        """Set default models from environment variables if not provided"""
+        if self.optimization_model is None:
+            self.optimization_model = os.getenv("OPTIMIZATION_MODEL", "openai/gpt-4o")
+        if self.execution_model is None:
+            self.execution_model = os.getenv("EXECUTION_MODEL", "openai/gpt-4o-mini")
+        if self.evaluation_model is None:
+            self.evaluation_model = os.getenv("EVALUATION_MODEL", "openai/gpt-4o")
 
 @dataclass
 class OptimizationResult:
@@ -34,9 +43,12 @@ class OptimizationResult:
 class SPOFramework:
     """Self-Supervised Prompt Optimization Framework"""
     
-    def __init__(self, config: PromptOptimizationConfig, api_key: str):
+    def __init__(self, config: PromptOptimizationConfig, api_key: Optional[str] = None):
         self.config = config
-        self.client = OpenAI(api_key=api_key)
+        
+        # Create OpenRouter LLM client
+        self.client = create_llm_client(api_key=api_key)
+        
         self.logger = self._setup_logging()
         self.optimization_history: List[OptimizationResult] = []
         
@@ -70,7 +82,7 @@ class SPOFramework:
             OptimizationResult with the best performing prompt
         """
         self.logger.info("Starting prompt optimization process")
-        
+        self.logger.info(f"Task description: {task_description}")
         current_prompt = initial_prompt
         best_result = None
         
@@ -160,7 +172,7 @@ Please provide an optimized version of this prompt that will perform better for 
 Return only the optimized prompt without additional explanation."""
 
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.config.optimization_model,
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -219,7 +231,7 @@ Return only the optimized prompt without additional explanation."""
     async def _execute_prompt(self, prompt: str, input_text: str) -> str:
         """Execute a prompt with given input"""
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.config.execution_model,
                 messages=[
                     {"role": "user", "content": f"{prompt}\n\nInput: {input_text}"}
@@ -263,7 +275,7 @@ Please score the actual output on a scale of 0.0 to 1.0 based on:
 Return only a number between 0.0 and 1.0 representing the score."""
 
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.config.evaluation_model,
                 messages=[
                     {"role": "user", "content": evaluation_prompt}
@@ -273,11 +285,12 @@ Return only a number between 0.0 and 1.0 representing the score."""
             )
             
             score_text = response.choices[0].message.content.strip()
+            print(f"Score text: {score_text}")
             score = float(score_text)
             return max(0.0, min(1.0, score))  # Clamp between 0 and 1
             
         except Exception as e:
-            self.logger.warning(f"Error scoring output: {str(e)}")
+            self.logger.warning(f"Error scoring output: {str(e)}", exc_info=True)
             return 0.5  # Default middle score on error
     
     async def _score_general_quality(
@@ -310,7 +323,7 @@ Please score the output on a scale of 0.0 to 1.0 based on:
 Return only a number between 0.0 and 1.0 representing the score."""
 
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.config.evaluation_model,
                 messages=[
                     {"role": "user", "content": evaluation_prompt}

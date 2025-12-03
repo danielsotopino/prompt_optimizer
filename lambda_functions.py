@@ -187,7 +187,7 @@ class MetaGPTStyleOptimizer:
                 prompt = lambda_func(test_input)
                 
                 # Execute with LLM
-                response = self.client.chat.completions.create(
+                response = self.client.chat_completions_create(
                     model=self.config.execution_model,
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.1,
@@ -244,7 +244,7 @@ Improve this prompt by:
 Return ONLY the improved prompt template with {{input_variable}} as placeholder."""
 
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.config.optimization_model,
                 messages=[{"role": "user", "content": improvement_prompt}],
                 temperature=0.7,
@@ -279,7 +279,7 @@ Actual: {output}
 Consider semantic similarity, not just exact matching. Return only the numerical score."""
 
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.config.evaluation_model,
                 messages=[{"role": "user", "content": evaluation_prompt}],
                 temperature=0.1,
@@ -302,7 +302,7 @@ Output: {output}
 Consider relevance, completeness, and accuracy. Return only the numerical score."""
 
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat_completions_create(
                 model=self.config.evaluation_model,
                 messages=[{"role": "user", "content": evaluation_prompt}],
                 temperature=0.1,

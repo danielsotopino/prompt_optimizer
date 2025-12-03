@@ -1,6 +1,6 @@
 # Self-Supervised Prompt Optimization (SPO) Framework
 
-A complete implementation of the SPO framework based on MetaGPT for automated prompt optimization using OpenAI. This project is inspired by prompt optimization techniques documented by Mistral AI and adapted to work with OpenAI models.
+A complete implementation of the SPO framework based on MetaGPT for automated prompt optimization using OpenRouter. This project supports multiple LLM providers (OpenAI, Anthropic, Google, etc.) through OpenRouter's unified API.
 
 ## 🚀 Features
 
@@ -50,9 +50,15 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-3. **Configure OpenAI API Key**:
+3. **Configure OpenRouter API Key**:
 ```bash
-export OPENAI_API_KEY="your-api-key-here"
+# Create .env file or export environment variable
+export OPENROUTER_API_KEY="your-openrouter-api-key-here"
+
+# Configure models in .env file (see .env.example)
+# OPTIMIZATION_MODEL=openai/gpt-4o
+# EXECUTION_MODEL=openai/gpt-4o-mini
+# EVALUATION_MODEL=openai/gpt-4o
 ```
 
 ## 🎯 Quick Start
@@ -63,8 +69,8 @@ export OPENAI_API_KEY="your-api-key-here"
 # 1. Activate virtual environment
 source venv/bin/activate
 
-# 2. Configure OpenAI API key
-export OPENAI_API_KEY="your-api-key-here"
+# 2. Configure OpenRouter API key
+export OPENROUTER_API_KEY="your-openrouter-api-key-here"
 
 # 3. Run quick test (2-3 minutes, ~$0.10-0.20)
 python test_optimization.py
@@ -74,7 +80,7 @@ python test_optimization.py
 - ⚡ 3 basic optimization iterations
 - 🎯 Use case: job title classification
 - 📊 Shows scores and improvements in real-time
-- 💰 Uses `gpt-4o-mini` for lower cost
+- 💰 Uses `openai/gpt-4o-mini` for lower cost
 - ⏱️ Completes in 2-3 minutes
 
 ### Job Title Classification Example
@@ -535,13 +541,25 @@ async def run_example():
 
 ### Custom Models
 
+Models are configured via environment variables in `.env` file:
+
+```bash
+# .env file
+OPENROUTER_API_KEY=your-api-key
+OPTIMIZATION_MODEL=openai/gpt-4o
+EXECUTION_MODEL=openai/gpt-4o-mini
+EVALUATION_MODEL=openai/gpt-4o
+```
+
+Or via code:
+
 ```python
 config = PromptOptimizationConfig(
-    optimization_model="gpt-4o",        # Model for optimization
-    execution_model="gpt-4o-mini",      # Model for execution
-    evaluation_model="gpt-4o",          # Model for evaluation
-    temperature=0.7,                     # Creativity
-    max_tokens=2000                      # Token limit
+    optimization_model="anthropic/claude-3.5-sonnet",  # Model for optimization
+    execution_model="anthropic/claude-3-haiku",        # Model for execution
+    evaluation_model="anthropic/claude-3.5-sonnet",    # Model for evaluation
+    temperature=0.7,                                    # Creativity
+    max_tokens=2000                                     # Token limit
 )
 ```
 
@@ -557,9 +575,9 @@ custom_criteria = [
 
 ## 📚 Additional Resources
 
-- [OpenAI Documentation](https://platform.openai.com/docs)
+- [OpenRouter Documentation](https://openrouter.ai/docs)
 - [Original MetaGPT Paper](https://arxiv.org/abs/2308.00352)
-- [Prompt Engineering Guide](https://platform.openai.com/docs/guides/prompt-engineering)
+- [OpenRouter Models](https://openrouter.ai/models)
 - [Mistral Prompt Optimization - Base Document](https://docs.mistral.ai/guides/prompting_capabilities/) - *Optimization techniques that inspired this framework*
 
 ## 🤝 Contributions
@@ -592,7 +610,7 @@ This project is under the MIT license. See LICENSE file for details.
 ### 🎯 **Tips for Better Results**
 - **Quality Data**: Results depend on the quality of input data
 - **Configuration**: Adjust parameters according to your specific needs
-- **API Key**: Make sure you have sufficient credits in your OpenAI account
+- **API Key**: Make sure you have sufficient credits in your OpenRouter account
 - **First Tests**: Use `test_optimization.py` to validate your configuration
 
 ## 🚨 Common Troubleshooting
@@ -608,10 +626,11 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### ❌ "OpenAI authentication error"
+### ❌ "OpenRouter authentication error"
 - Verify that your API key is correct
-- Make sure you have credits in your OpenAI account
+- Make sure you have credits in your OpenRouter account
 - Check that there are no extra spaces in the API key
+- Verify the model names are in the correct format (e.g., "openai/gpt-4o")
 
 ### ❌ "Timeout or network errors"
 - Reduce the number of iterations: `--iterations 2`
@@ -656,7 +675,12 @@ For problems or questions:
 1. **Initial configuration:**
    ```bash
    source venv/bin/activate
-   export OPENAI_API_KEY="your-api-key"
+   export OPENROUTER_API_KEY="your-openrouter-api-key"
+   # Or create .env file with:
+   # OPENROUTER_API_KEY=your-key
+   # OPTIMIZATION_MODEL=openai/gpt-4o
+   # EXECUTION_MODEL=openai/gpt-4o-mini
+   # EVALUATION_MODEL=openai/gpt-4o
    ```
 
 2. **First test:**
